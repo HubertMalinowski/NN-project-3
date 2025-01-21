@@ -592,8 +592,9 @@ class WeatherDatasetCreator:
         feature_names.extend(["sin_day_target", "cos_day_target"])
 
         # Add feature names for each day in window with day index
-        for col in day_data.columns:
-            feature_names.extend([f"{col}_d{i}" for i in range(len(window))])
+        for i in range(len(window)):
+            for col in day_data.columns:
+                feature_names.append(f"{col}_d{i}")
         return feature_names
 
     def create_complete_windowed_dataset(
@@ -766,8 +767,8 @@ if __name__ == "__main__":
     train_data, val_data, test_data = pipeline.prepare_datasets(
         window_size=3,
         skip=1,
-        test_size=0.2,
-        val_size=0.2,
+        test_size=0.15,
+        val_size=0.15,
         random_state=42,
-        load_processed=True,  # Process raw data and save windowed datasets
+        load_processed=False,  # Process raw data and save windowed datasets
     )
