@@ -222,10 +222,8 @@ class WeatherPreprocessor:
     def __init__(self, scaler_dir: Path):
         self.weather_scalers = WeatherScalers(scaler_dir)
         self.measurement_configs = {
-            "temperature": ("temperature", ("min", "max", "mean")),
-            "pressure": ("pressure", ("mean",)),
-            "humidity": ("humidity", ("mean",)),
-            "wind_speed": ("wind_speed", ("mean", "max")),
+            "temperature": ("temperature", ("mean",)),
+            "wind_speed": ("wind_speed", ("max",)),
         }
 
     def _handle_nans(self, df: pd.DataFrame, measurement_name: str) -> pd.DataFrame:
@@ -371,12 +369,12 @@ class WeatherPreprocessor:
             transformed_dfs.append(transformed_df)
 
         # Handle NaNs in wind direction before transformation
-        wind_dir_df = self._handle_nans(weather_data.wind_direction, "wind_direction")
-        transformed_dfs.append(self._transform_wind_direction(wind_dir_df))
+        # wind_dir_df = self._handle_nans(weather_data.wind_direction, "wind_direction")
+        # transformed_dfs.append(self._transform_wind_direction(wind_dir_df))
 
         # Handle NaNs in weather description using categorical method
-        weather_desc_df = self._handle_categorical_nans(weather_data.weather_description, "weather_description")
-        transformed_dfs.append(self._transform_weather_description(weather_desc_df))
+        # weather_desc_df = self._handle_categorical_nans(weather_data.weather_description, "weather_description")
+        # transformed_dfs.append(self._transform_weather_description(weather_desc_df))
 
         # Merge all dataframes
         result = transformed_dfs[0]
@@ -604,7 +602,7 @@ class WeatherDatasetCreator:
         all_features = []
         metadata_rows = []
         y_rows = []
-        scaled_speed_threshold = self.weather_scalers.transform_data(np.array([[6, 6]]), "wind_speed")[0][1]
+        scaled_speed_threshold = self.weather_scalers.transform_data(np.array([[6]]), "wind_speed")[0][0]
         for city, city_df in processed_data.groupby("city"):
             city_df = city_df.reset_index(drop=True)
 
